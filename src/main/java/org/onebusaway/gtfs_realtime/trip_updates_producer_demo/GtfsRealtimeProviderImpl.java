@@ -149,12 +149,17 @@ public class GtfsRealtimeProviderImpl {
     for (int i = 0; i < vehicleArray.length(); ++i) {
 
       JSONObject obj = vehicleArray.getJSONObject(i);
-      String trainNumber = obj.getString("trainno");
-      String route = obj.getString("dest");
-      String stopId = obj.getString("nextstop");
-      double lat = obj.getDouble("lat");
-      double lon = obj.getDouble("lon");
-      int delay = obj.getInt("late");
+      String vehicleId = obj.getString("VEHICLE");
+	  String tripId = obj.getString("TRIPID");
+	  // String blockId = obj.getString("BLOCKID");
+	  // String blockAbbr = obj.getString("BLOCK_ABBR");
+	  // String timepoint = obj.getString("TIMEPOINT");
+	  // String msgTime = obj.getString("MSGTIME");
+      String route = obj.getString("ROUTE");
+      String stopId = obj.getString("STOPID");
+      double lat = obj.getDouble("LATITUDE");
+      double lon = obj.getDouble("LONGITUDE");
+      int delay = -1 * obj.getInt("ADHERENCE");
 
       /**
        * We construct a TripDescriptor and VehicleDescriptor, which will be used
@@ -165,9 +170,9 @@ public class GtfsRealtimeProviderImpl {
        */
       TripDescriptor.Builder tripDescriptor = TripDescriptor.newBuilder();
       tripDescriptor.setRouteId(route);
-
+	  tripDescriptor.setTripId(tripId);
       VehicleDescriptor.Builder vehicleDescriptor = VehicleDescriptor.newBuilder();
-      vehicleDescriptor.setId(trainNumber);
+      vehicleDescriptor.setId(vehicleId);
 
       /**
        * To construct our TripUpdate, we create a stop-time arrival event for
@@ -192,7 +197,7 @@ public class GtfsRealtimeProviderImpl {
        * GTFS-realtime trip updates feed.
        */
       FeedEntity.Builder tripUpdateEntity = FeedEntity.newBuilder();
-      tripUpdateEntity.setId(trainNumber);
+      tripUpdateEntity.setId(vehicleId);
       tripUpdateEntity.setTripUpdate(tripUpdate);
       tripUpdates.addEntity(tripUpdateEntity);
 
@@ -216,7 +221,7 @@ public class GtfsRealtimeProviderImpl {
        * GTFS-realtime vehicle positions feed.
        */
       FeedEntity.Builder vehiclePositionEntity = FeedEntity.newBuilder();
-      vehiclePositionEntity.setId(trainNumber);
+      vehiclePositionEntity.setId(vehicleId);
       vehiclePositionEntity.setVehicle(vehiclePosition);
       vehiclePositions.addEntity(vehiclePositionEntity);
     }
@@ -235,8 +240,9 @@ public class GtfsRealtimeProviderImpl {
    *         data API.
    */
   private JSONArray downloadVehicleDetails() throws IOException, JSONException {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(
-        _url.openStream()));
+    URL testURL = new URL("http://developer.itsmarta.com/BRDRestService/BRDRestService.svc/GetAllBus");
+	BufferedReader reader = new BufferedReader(new InputStreamReader(
+        testURL.openStream()));
     JSONTokener tokener = new JSONTokener(reader);
     JSONArray vehiclesArray = new JSONArray(tokener);
     return vehiclesArray;

@@ -84,7 +84,7 @@ public class GtfsRealtimeTripUpdatesProducerDemoMain {
     Injector injector = Guice.createInjector(modules);
     injector.injectMembers(this);
 
-    _provider.setUrl(new URL("http://www3.septa.org/hackathon/TrainView/"));
+    _provider.setUrl(new URL("http://developer.itsmarta.com/BRDRestService/BRDRestService.svc/GetAllBus"));
 
     if (cli.hasOption(ARG_TRIP_UPDATES_URL)) {
       URL url = new URL(cli.getOptionValue(ARG_TRIP_UPDATES_URL));
